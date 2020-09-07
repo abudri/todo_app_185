@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 
 # an instance of the SessionPersistance class is used to set equal to the @storage instance variable above in `before`
 class SessionPersistence
@@ -7,7 +8,7 @@ class SessionPersistence
   end
 
   def find_list(id)
-    @session[:lists].find {|list| list[:id] == id }
+    @session[:lists].find { |list| list[:id] == id }
   end
 
   def all_lists
@@ -20,7 +21,7 @@ class SessionPersistence
   end
 
   def delete_list(list_id)
-    @session[:lists].reject! {|list| list[:id] == list_id } # remove the list - which is a hash itself, from the session array. refactored in lesson 6 to use Array#reject! and an actual id not based on index, for the list: https://launchschool.com/lessons/2c69904e/assignments/a8c93890
+    @session[:lists].reject! { |list| list[:id] == list_id } # remove the list - which is a hash itself, from the session array. refactored in lesson 6 to use Array#reject! and an actual id not based on index, for the list: https://launchschool.com/lessons/2c69904e/assignments/a8c93890
   end
 
   def update_list_name(list_id, new_name)
@@ -36,12 +37,12 @@ class SessionPersistence
 
   def delete_todo_from_list(list_id, todo_id)
     list = find_list(list_id)
-    list[:todos].reject! {|todo| todo[:id] == todo_id }  # updated Lesson 6, for any existing todo item with an id equal to todo_id `:id` from the url params, delete from todos with Array#reject!, https://launchschool.com/lessons/2c69904e/assignments/af479b47
+    list[:todos].reject! { |todo| todo[:id] == todo_id } # updated Lesson 6, for any existing todo item with an id equal to todo_id `:id` from the url params, delete from todos with Array#reject!, https://launchschool.com/lessons/2c69904e/assignments/af479b47
   end
 
   def update_todo_status(list_id, todo_id, new_status)
     list = find_list(list_id)
-    todo =  list[:todos].find {|t| t[:id] == todo_id } # refactored in lesson 6 assignment https://launchschool.com/lessons/2c69904e/assignments/af479b47
+    todo = list[:todos].find { |t| t[:id] == todo_id } # refactored in lesson 6 assignment https://launchschool.com/lessons/2c69904e/assignments/af479b47
     todo[:completed] = new_status
   end
 
@@ -50,7 +51,7 @@ class SessionPersistence
     list[:todos].each { |todo| todo[:completed] = true }
   end
 
-  private 
+  private
 
   def next_element_id(elements) # for assigning a next available id for either a todo list itself or a todo item.  Was called `next_todo_id` in previous assignment, refactored in this new lesson 6 assignment: https://launchschool.com/lessons/2c69904e/assignments/a8c93890
     max = elements.map { |element| element[:id] }.max || 0 # the `|| 0` handles case of making the first todo item, fro which [].max returns nil, so nil || 0 return 0 and we avoid the nil + 1 error on next line

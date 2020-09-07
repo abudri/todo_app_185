@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Course 185 Database Applications - Taking Session-based TodoList Project from 175 and replacing sessions alone with Postgres DB
 
 require 'sinatra'
@@ -5,7 +7,7 @@ require 'sinatra/reloader' if development? # deploying to Heroku/Production less
 require 'sinatra/content_for'
 require 'tilt/erubis'
 
-require_relative 'database_persistence'  # session_persistence.rb
+require_relative 'database_persistence' # session_persistence.rb
 
 # session - hash // it's key :lists - is an array - see `session[:lists] ||= []`. it also has keys :error, :success for flash messages
 # session[:lists] << { name: list_name, todos: [] }
@@ -39,7 +41,7 @@ helpers do
   end
 
   def sort_lists(lists, &block)
-    complete_lists, incomplete_lists = lists.partition { |list| list_complete?(list) }  # this whole method totally refactored in lesson 6 to make room for lists having ids, see: https://launchschool.com/lessons/2c69904e/assignments/a8c93890
+    complete_lists, incomplete_lists = lists.partition { |list| list_complete?(list) } # this whole method totally refactored in lesson 6 to make room for lists having ids, see: https://launchschool.com/lessons/2c69904e/assignments/a8c93890
 
     incomplete_lists.each(&block)
     complete_lists.each(&block)
@@ -55,11 +57,11 @@ helpers do
 end
 
 before do
-  @storage = DatabasePersistence.new(logger)  # database_persistence.rb contains this class  # logger is an object provided by sinatra for loggin purposes
+  @storage = DatabasePersistence.new(logger) # database_persistence.rb contains this class  # logger is an object provided by sinatra for loggin purposes
 end
 
 after do
-  @storage.disconnect  # prevents us from exceeding Heroku database 20 connection limit. See: https://launchschool.com/lessons/421e2d1e/assignments/54681a23
+  @storage.disconnect # prevents us from exceeding Heroku database 20 connection limit. See: https://launchschool.com/lessons/421e2d1e/assignments/54681a23
 end
 
 # By using a common method to load the list, we have a place to define the code that handles a list not existing. Using redirect in Sinatra interrupts the processing of a request and prevents any later code from executing: https://launchschool.com/lessons/31df6daa/assignments/cb2ef1d2
@@ -154,9 +156,9 @@ end
 post '/lists/:id/destroy' do
   id = params[:id].to_i # from edit existing list method above
   @storage.delete_list(id)
-  
+
   session[:success] = 'The list has been deleted.'
-  if env["HTTP_X_REQUESTED_WITH"] == "XMLHttpRequest" # conditional for checking if an AJAX request was made, see Lesson 6: https://launchschool.com/lessons/2c69904e/assignments/94ee8ca2
+  if env['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest' # conditional for checking if an AJAX request was made, see Lesson 6: https://launchschool.com/lessons/2c69904e/assignments/94ee8ca2
     '/lists'
   else
     redirect '/lists' # redirect to the home page which is '/lists'
@@ -175,7 +177,7 @@ post '/lists/:list_id/todos' do
     erb :list, layout: :layout
   else
     @storage.create_new_todo(@list_id, text)
-     
+
     session[:success] = 'The todo item was added to the list'
     redirect "/lists/#{@list_id}" # redirect back to the list we just added the item to
   end
@@ -188,7 +190,7 @@ post '/lists/:list_id/todos/:id/destroy' do
   todo_id = params[:id].to_i # :id here being the id, or index of the todo list item for this list
 
   @storage.delete_todo_from_list(@list_id, todo_id)
-  if env["HTTP_X_REQUESTED_WITH"] == "XMLHttpRequest" # conditional for checking if an AJAX request was made, see Lesson 6: https://launchschool.com/lessons/2c69904e/assignments/94ee8ca2
+  if env['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest' # conditional for checking if an AJAX request was made, see Lesson 6: https://launchschool.com/lessons/2c69904e/assignments/94ee8ca2
     status 204
   else
     session[:success] = 'The todo item has been deleted from the list.' # original existing code from earlier
@@ -202,7 +204,7 @@ post '/lists/:list_id/todos/:id' do
   @list = load_list(@list_id) # Refactor from Lesson 6 assignment for handling non-existing lists passed to url params: https://launchschool.com/lessons/31df6daa/assignments/cb2ef1d2
   todo_id = params[:id].to_i # :id here being the id, or index of the todo list item for this list
   is_completed = params[:completed] == 'true'
-  
+
   @storage.update_todo_status(@list_id, todo_id, is_completed) # need  the status itself, which is held in in_completed
 
   session[:success] = 'The todo item has been updated.'
